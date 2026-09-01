@@ -1,7 +1,8 @@
 from flask import Blueprint, jsonify, request
 from backend.app.services.usuario_service import (
     obtener_usuario_por_nombre_usuario,
-    crear_usuario as crear_usuario_service
+    crear_usuario as crear_usuario_service,
+    autenticar_usuario
 )
 usuario_routes = Blueprint("usuario_routes", __name__)
 
@@ -55,3 +56,37 @@ def crear_usuario():
         "mensaje": "Usuario creado correctamente",
         "id_usuario": id_usuario
     }), 201
+
+@usuario_routes.route("/login", methods=["POST"])
+def login():
+    datos = request.get_json(silent=True)
+
+    if datos is None:
+        return jsonify({
+            "mensaje": "El cuerpo de la petición debe ser JSON"
+        }), 400
+
+    nombre_usuario = datos.get("nombre_usuario")
+    password = datos.get("password")
+
+    if not nombre_usuario or not password:
+        return jsonify({
+            "mensaje": "Nombre de usuario y contraseña son obligatorios"
+        }), 400
+
+    usuario = autenticar_usuario(nombre_usuario, password)
+
+    if usuario is None:
+        return jsonify({
+            "mensaje": "Usuario o contraseña incorrectos"
+        }), 401
+
+    return jsonify({
+        "mensaje": "Login correcto",
+        "usuario": {
+            "id_usuario": usuario["id_usuario"],
+            "nombre": usuario["nombre"],
+            "nombre_usuario": usuario["nombre_usuario"],
+            "email": usuario["email"]
+        }
+    }), 200
