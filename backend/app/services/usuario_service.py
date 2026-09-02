@@ -1,5 +1,6 @@
 from backend.app.repositories.usuario_repository import (
     buscar_por_nombre_usuario,
+    buscar_por_id_usuario,
     crear_usuario as crear_usuario_repository
 )
 
@@ -15,6 +16,9 @@ def obtener_usuario_por_nombre_usuario(nombre_usuario):
         return None
 
     return usuario
+    
+def obtener_usuario_por_id(id_usuario):
+    return buscar_por_id_usuario(id_usuario)
 
 def crear_usuario(nombre, nombre_usuario, password, email, telefono):
     usuario_existente = buscar_por_nombre_usuario(nombre_usuario)

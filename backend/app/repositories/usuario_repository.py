@@ -20,6 +20,26 @@ def buscar_por_nombre_usuario(nombre_usuario):
 
     return usuario
 
+def buscar_por_id_usuario(id_usuario):
+    conexion = obtener_conexion()
+
+    cursor = conexion.cursor(dictionary=True)
+
+    sql = """
+        SELECT *
+        FROM usuario
+        WHERE id_usuario = %s
+    """
+
+    cursor.execute(sql, (id_usuario,))
+
+    usuario = cursor.fetchone()
+
+    cursor.close()
+    conexion.close()
+
+    return usuario
+
 def crear_usuario(nombre, nombre_usuario, password_hash, email, telefono, estado):
     conexion = obtener_conexion()
 

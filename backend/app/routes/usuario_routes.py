@@ -1,25 +1,45 @@
 from flask import Blueprint, jsonify, request
+
 from backend.app.services.usuario_service import (
     obtener_usuario_por_nombre_usuario,
+    obtener_usuario_por_id,
     crear_usuario as crear_usuario_service,
     autenticar_usuario
 )
-from backend.app.utils.jwt import generar_token
 
+from backend.app.utils.jwt import generar_token
+from backend.app.utils.auth import obtener_usuario_desde_token
 
 usuario_routes = Blueprint("usuario_routes", __name__)
 
 
 @usuario_routes.route("/usuarios/<nombre_usuario>", methods=["GET"])
 def obtener_usuario(nombre_usuario):
-    usuario = obtener_usuario_por_nombre_usuario(nombre_usuario)
+    
+    id_usuario = obtener_usuario_desde_token()
+
+    if id_usuario is None:
+        return jsonify({
+            "mensaje": "Token inválido o ausente"
+        }), 401
+    
+    usuario = obtener_usuario_por_id(id_usuario)
 
     if usuario is None:
         return jsonify({
             "mensaje": "Usuario no encontrado"
         }), 404
 
-    return jsonify(usuario), 200
+    return jsonify({
+        "id_usuario": usuario["id_usuario"],
+        "nombre": usuario["nombre"],
+        "nombre_usuario": usuario["nombre_usuario"],
+        "email": usuario["email"],
+        "telefono": usuario["telefono"],
+        "estado": usuario["estado"]
+    }), 200
+
+
 
 @usuario_routes.route("/usuarios", methods=["POST"])
 def crear_usuario():
