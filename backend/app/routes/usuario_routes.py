@@ -4,6 +4,9 @@ from backend.app.services.usuario_service import (
     crear_usuario as crear_usuario_service,
     autenticar_usuario
 )
+from backend.app.utils.jwt import generar_token
+
+
 usuario_routes = Blueprint("usuario_routes", __name__)
 
 
@@ -81,8 +84,11 @@ def login():
             "mensaje": "Usuario o contraseña incorrectos"
         }), 401
 
+    token = generar_token(usuario["id_usuario"])
+
     return jsonify({
         "mensaje": "Login correcto",
+        "token": token,
         "usuario": {
             "id_usuario": usuario["id_usuario"],
             "nombre": usuario["nombre"],
