@@ -4,7 +4,8 @@ from backend.app.services.usuario_service import (
     obtener_usuario_por_nombre_usuario,
     obtener_usuario_por_id,
     crear_usuario as crear_usuario_service,
-    autenticar_usuario
+    autenticar_usuario,
+    usuario_tiene_rol
 )
 
 from backend.app.utils.jwt import generar_token
@@ -115,4 +116,31 @@ def login():
             "nombre_usuario": usuario["nombre_usuario"],
             "email": usuario["email"]
         }
+    }), 200
+
+
+@usuario_routes.route("/negocios/<int:id_negocio>/solo-dueno", methods=["GET"])
+def solo_dueno(id_negocio):
+
+    id_usuario = obtener_usuario_desde_token()
+
+    if id_usuario is None:
+        return jsonify({
+            "mensaje": "Token inválido o ausente"
+        }), 401
+
+    tiene_permiso = usuario_tiene_rol(
+        id_usuario,
+        id_negocio,
+        "DUEÑO"
+    )
+
+    if not tiene_permiso:
+        return jsonify({
+            "mensaje": "No tenés permisos para realizar esta acción"
+        }), 403
+
+    return jsonify({
+        "mensaje": "Acceso permitido",
+        "rol": "DUEÑO"
     }), 200

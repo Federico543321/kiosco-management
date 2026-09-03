@@ -1,6 +1,7 @@
 from backend.app.repositories.usuario_repository import (
     buscar_por_nombre_usuario,
     buscar_por_id_usuario,
+    buscar_rol_usuario_negocio,
     crear_usuario as crear_usuario_repository
 )
 
@@ -53,3 +54,19 @@ def autenticar_usuario(nombre_usuario, password):
         return None
 
     return usuario
+
+def obtener_rol_usuario_negocio(id_usuario, id_negocio):
+    resultado = buscar_rol_usuario_negocio(id_usuario, id_negocio)
+
+    if resultado is None:
+        return None
+
+    return resultado["rol"]
+
+def usuario_tiene_rol(id_usuario, id_negocio, rol_requerido):
+    rol = obtener_rol_usuario_negocio(id_usuario, id_negocio)
+
+    if rol is None:
+        return False
+
+    return rol == rol_requerido

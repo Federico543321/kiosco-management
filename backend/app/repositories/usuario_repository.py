@@ -40,6 +40,28 @@ def buscar_por_id_usuario(id_usuario):
 
     return usuario
 
+def buscar_rol_usuario_negocio(id_usuario, id_negocio):
+    conexion = obtener_conexion()
+
+    cursor = conexion.cursor(dictionary=True)
+
+    sql = """
+        SELECT rol
+        FROM usuario_negocio
+        WHERE id_usuario = %s
+          AND id_negocio = %s
+          AND estado = 'ACTIVO'
+    """
+
+    cursor.execute(sql, (id_usuario, id_negocio))
+
+    resultado = cursor.fetchone()
+
+    cursor.close()
+    conexion.close()
+
+    return resultado
+
 def crear_usuario(nombre, nombre_usuario, password_hash, email, telefono, estado):
     conexion = obtener_conexion()
 
