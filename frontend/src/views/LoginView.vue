@@ -32,6 +32,8 @@ async function iniciarSesion() {
   }
 
   authStore.token = datos.token
+  localStorage.setItem('token', datos.token)
+
   authStore.usuario = datos.usuario
 
   router.push('/dashboard')
