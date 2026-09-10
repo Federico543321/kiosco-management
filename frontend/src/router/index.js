@@ -29,14 +29,21 @@ const router = createRouter({
       path: '/dashboard',
       name: 'dashboard',
       component: DashboardView,
+      meta: {
+        requiereAuth: true,
+      },
     }
   ],
 })
 
-router.beforeEach((to) => {
+router.beforeEach(async (to) => {
   const authStore = useAuthStore()
 
-  if (to.path === '/dashboard' && !authStore.token) {
+  if (!authStore.autenticacionVerificada) {
+    await authStore.obtenerUsuario()
+  }
+
+  if (to.meta.requiereAuth && !authStore.token) {
     return '/login'
   }
 

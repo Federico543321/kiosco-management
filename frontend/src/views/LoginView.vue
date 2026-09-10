@@ -13,32 +13,18 @@ const router = useRouter()
 async function iniciarSesion() {
   error.value = ''
 
-  const respuesta = await fetch('http://localhost:5000/login', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      nombre_usuario: nombreUsuario.value,
-      password: password.value,
-    }),
-  })
+  const resultado = await authStore.iniciarSesion(
+    nombreUsuario.value,
+    password.value
+  )
 
-  const datos = await respuesta.json()
-
-  if (!respuesta.ok){
-    error.value = datos.mensaje
+  if (!resultado.ok) {
+    error.value = resultado.mensaje
     return
   }
 
-  authStore.token = datos.token
-  localStorage.setItem('token', datos.token)
-
-  authStore.usuario = datos.usuario
-
   router.push('/dashboard')
-}
-</script>
+}</script>
 
 <template>
   <main class="login-page">
